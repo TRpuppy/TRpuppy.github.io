@@ -14,3 +14,11 @@ comment: true # (set false will disable comment, even if you've enabled it in si
 
 月溅星河，长路漫漫。
 风烟残尽，独影阑珊。
+
+![旺财](旺财.jpg)
+$$
+e^{i\pi}+1=0
+$$
+
+
+
