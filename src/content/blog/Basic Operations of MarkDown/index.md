@@ -4,7 +4,7 @@ description: '准备开始使用MarkDown来写博客。这里就先发一篇记�
 publishDate: '2025-11-12 00:17:00' # (Required, Date)
 tags:
   - Markdown
-heroImage: { src: './adf1d1ec5812ae93214987d03c70ea4.jpg', alt: '强！', color: '#B4C6DA' }
+# heroImage: { src: './adf1d1ec5812ae93214987d03c70ea4.jpg', alt: '强！', color: '#B4C6DA' }
 draft: false # (set true will only show in development)
 language: 'Chinese' # (String as you like)
 comment: true # (set false will disable comment, even if you've enabled it in site-config)
