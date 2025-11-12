@@ -13,3 +13,4 @@ comment: true # (set false will disable comment, even if you've enabled it in si
 ## 一段。
 
 月溅星河，长路漫漫。
+风烟残尽，独影阑珊。
