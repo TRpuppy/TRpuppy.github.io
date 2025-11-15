@@ -1,5 +1,4 @@
 ---
-
 title: 'ICS crash course 08 ECF' # (Required, max 60)
 description: '大脑.exe未响应' # (Required, 10 to 160)
 publishDate: '2025-11-15 00:14:00' # (Required, Date)
@@ -90,7 +89,7 @@ getpid = 2851
 getppid = 1492
 ```
 
-#### fork函数
+#### 创建子进程——fork函数
 
 fork函数不接收参数，返回类型为pid_t。
 
@@ -179,6 +178,171 @@ int main()
     return 0;
 }
 ```
+#### 子进程回收
+
+进程终止时，不会立即被清除，而是等待被父进程回收。被回收后，内核将子进程的退出状态传递给父进程，然后清除子进程。
+
+一个中止但没有被回收的进程叫做僵尸进程(zombie，死而不僵)。
+
+如果父进程终止了，内核会安排一个特殊的进程init作为父进程的所有未清除的子进程的父亲。init进程的PID是1，是进程树的根节点。
+
+#### 等待子进程终止——waitpid函数
+
+waitpid函数的定义如下：
+
+```c++
+include<wait.h>
+include<sys/types.h>
+pid_t waitpid(pid_t pid, int *statusp, int options)
+```
+
+这个函数基本是等待一些子进程的终止。视参数的不同有多种不同的行为。
+
+##### **等待集**
+
+1. 如果pid不为-1，则等待集是pid对应的进程。这个进程**必须是当前进程的子进程**。
+2. 如果pid为-1，则等待集是当前进程的所有子进程。
+
+若pid为-1但是当前进程没有子进程，或者pid不为-1但是不合法，则直接返回-1，并设置errno为ECHILD。
+
+##### **函数行为**
+
+1. options = 0，执行默认行为。默认行为是挂起当前进程直到等待集中有进程**终止**。返回这个终止进程的pid。
+2. options = WNOHANG，则执行不挂起行为。无论如何，函数都立即返回。如果等待集中没有进程终止，则返回0；否则返回终止的PID。
+3. options = WUNTRACED，则不但监控终止行为，还**检测停止行为**。即等待集中的子进程被终止或者中断，都会引起返回。
+4. options = WCONTINUED，监测等待集中的**终止行为或者中断后重新执行的行为**。即等待集中的子进程被终止或者被中断后收到信号SIGCONT重新执行，都会引起返回。
+5. 可以用或运算符组合这些选项。如options = WNOHANG | WUNTRACED，行为是监测停止和中断，且如2所示，立即返回。
+
+**如果waitpid函数检测到了终止行为，则会自动将终止的进程回收掉。**
+
+##### **返回额外信息：**
+
+该函数会将导致返回的子进程的信息传递到statusp指针中。
+
+设`status = *statusp`，则我们有下面几个宏来通过status得到子进程信息：
+
+![image-20251115185757694](image-20251115185757694.png)
+
+请注意，这些宏的使用方式是和operations参数的选取对应的。你只有监测了子进程的Stop行为，访问WIFSTOPPED才有意义。
+
+##### 几个栗子
+
+举几个例子，来帮助理解waitpid函数。
+
+先来看书上的例子，使用该函数的默认行为。
+
+![image-20251115191131263](image-20251115191131263.png)
+
+这段代码创建了N个子进程，每个在创建时即退出，返回码为100+i。
+
+while循环中，每次循环等待一个子进程结束。if语句确保正常返回后，输出信息。
+
+最终确保原进程没有其余子进程(因为在waitpid监测时，自动会将导致返回的终止的子进程回收。)
+
+程序正常退出。
+
+
+
+再来看一个算法界的段子——睡眠排序。
+
+所谓睡眠排序就是说，对于一个n元正int数组，我需要排序。我创建n个进程，第i个进程去sleep a[i]秒。
+
+**因为一秒的差异对于计算机来说是很大的，所以我们可以认为进程是按照睡眠时长从小到大醒来的。**
+
+然后我监测进程醒来的顺序，就可以得到排序结果。[^3]
+
+这个代码和上面的代码核心逻辑差不多。
+
+```C++
+#include <stdio.h>
+#include <unistd.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <wait.h>
+int a[5];
+int n = 5;
+int main()
+{
+    for(int i = 0; i < n; i++)
+    {
+        scanf("%d" , &a[i]);
+    }
+    for(int i = 0; i < n; i++)
+    {
+        pid_t pid = fork();
+        if(pid == 0)
+        {
+            sleep(a[i]);
+            exit(a[i]);
+        }
+    }
+    int status;
+    while(waitpid(-1 , &status , 0) > 0)
+    {
+        if(WIFEXITED(status))
+        {
+            printf("%d\n" , WEXITSTATUS(status));
+        }
+    }
+    return 0;
+}
+```
+
+再举一个例子，来看看选项WNOHANG的用处。
+
+```c++
+#include <sys/wait.h>
+#include <unistd.h>
+#include <stdio.h>
+
+int main() {
+    pid_t pid = fork();
+    
+    if (pid == 0) {
+        // 子进程
+        sleep(2);
+        printf("Child process exiting\n");
+        return 0;
+    } else {
+        // 父进程
+        int status;
+        pid_t result;
+        
+        while (1) {
+            result = waitpid(pid, &status, WNOHANG);
+            if (result == 0) {
+                printf("Child still running, doing other work...\n");
+                sleep(1);
+            } else if (result == pid) {
+                printf("Child exited\n");
+                break;
+            } else {
+                perror("waitpid");
+                break;
+            }
+        }
+    }
+    return 0;
+}
+```
+
+这个代码中使用while循环每次等待子进程的返回。如果子进程没有返回，则父进程能够**在循环中继续干别的事情**，而不是在那干等着。
+
+#### 加载并创建新的程序——execve函数
+
+![image-20251115195347709](image-20251115195347709.png)
+
+execve函数接受一个可执行文件的文件名，一个参数列表和一个环境变量列表。然后以指定的参数和环境变量，去运行对应的可执行文件。
+
+可想而知，execve最常见的使用场景是shell。在Shell Lab中，这个尤其得到明显的体现。
+
+## 信号
+
+
+
+
 
 [^1]:当然属于。用户模式中的进程没有权限创造一个新的进程，所以创造进程这件事得交给内核进程来干。这是一个标准的**Trap**。
 [^2]:四个。别忘了第一个创建出来的子进程也要fork一次。
+[^3]:~~这个算法的时间复杂度是O(1)的。因为对于任意大的数组，睡眠时间不会超过2147483647秒。你就说O不O(1)吧~~
+
