@@ -4,7 +4,7 @@ title: 'ICS crash course 08 ECF' # (Required, max 60)
 description: '大脑.exe未响应' # (Required, 10 to 160)
 publishDate: '2025-11-15 00:14:00' # (Required, Date)
 tags:
-  - Markdown
+  - ICS Crash Course
 heroImage: { src: './fCkHklUc5.jpg', alt: '出错啦！', color: '#B4C6DA' }
 draft: false # (set true will only show in development)
 language: 'Chinese' # (String as you like)

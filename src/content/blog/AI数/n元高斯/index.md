@@ -3,7 +3,7 @@ title: 'Prove some properties of n-variable Gaussian distribution' # (Required, 
 description: '也许我一生涓滴意念，侥幸汇成河——李宗盛《山丘》' # (Required, 10 to 160)
 publishDate: '2025-11-13 00:16:00' # (Required, Date)
 tags:
-  - Markdown
+  - Maths
 heroImage: { src: './1b52df7d8e194a5b707f2b22e2cb5d2.png', alt: '比起阳光，我更需要阳菜！', color: '#B4C6DA' }
 draft: false # (set true will only show in development)
 language: 'Chinese' # (String as you like)
