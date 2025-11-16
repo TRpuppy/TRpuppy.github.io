@@ -338,7 +338,157 @@ execve函数接受一个可执行文件的文件名，一个参数列表和一�
 
 ## 信号
 
+信号是由内核发送给进程的信息。
 
+### 信号的发射
+
+信号的发射是基于**进程组**概念实现的。进程组和pid差不多，也由一个进程组ID代表。
+
+子进程和父进程默认在同个进程组中。但是进程也可以改变自己或者子进程所属的进程组，也可以创建一个只包含自己的新的进程组。
+
+下面是一些例子：
+
++ 输入Ctrl+C会发射SIGINT(键盘中断)给当前的前台进程组。
+
++ 使用 /bin/kill -9 x会发送信号9(SIGKILL，杀死程序)给进程x。
+
++ 使用 /bin/kill -9 -x会发送信号9(SIGKILL)给**进程组**x。
+
++ C语言中可以使用kill函数来给其他进程发送信号。
+  + 如果pid > 0，则发送信号码sig给进程pid。
+  + 如果pid = 0，则发送信号给进程组中的所有进程，包括自己。
+  + 如果pid < 0，则发送信号给**进程组**-pid中的所有进程。
+
+```c++
+#include <sys/types.h>
+#include <signal.h>
+int kill(pid_t pid , int sig)
+```
+
+附，段子一则：
+
+![image-20251116104830481](image-20251116104830481.png)
+
+![image-20251116104907322](image-20251116104907322.png)
+
+~~（退役杀手当邮差.jpg)~~
+
+例如下面的代码中，父进程发送`kill`信号给子进程。
+
+![image-20251116110927669](image-20251116110927669.png)
+
+你可以使用`ps`命令查看终端的pid，然后写个C代码把终端杀了……
+
+然后你甚至还可以写出这种代码：
+
+```c++
+//killer_without_emotions.c
+#include<signal.h>
+#include<sys/types.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main()
+{
+    pid_t pid = getpid();
+    for(int i = 1; ; i++)
+    {
+        if(i == pid)
+        {
+            continue;
+        }
+        kill(i , SIGKILL);
+    }
+    kill(pid , SIGKILL);
+    exit(0);
+}
+```
+
+**不要在你的主系统中运行这个程序！**我尝试作死，在wsl中运行，导致wsl直接崩溃。好在windows主系统的进程和wsl是分开的，电脑没有蓝屏，然后wsl仍然可以重启。
+
+### 接受信号
+
+进程接收信号后，会采取一些行为。信号的默认行为见图所示。
+
+![image-20251116113025679](image-20251116113025679.png)
+
+进程可以通过`signal`函数修改默认行为。但是SIGSTOP与SIGKILL的行为不能修改。
+
+![image-20251116113322658](image-20251116113322658.png)
+
+这个函数修改与信号`signum`相关的行为。
+
++ 如果handler是`SIG_IGN`，那么会将默认行为改成忽略。
++ 如果是`SIG_DFL`，那么会将行为恢复为默认。
++ 否则handler传递一个用户定义的函数地址。只要进程接到这个信号，就会调用这个函数。这就是设置信号处理程序。
+
+下面的例子写了一个信号处理函数，来处理ctrl+C传出的SIGINT信号。注意函数`sigint_handler`接受一个参数sig，是引起它的信号。
+
+```C++
+#include<signal.h>
+#include<sys/types.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+void sigint_handler(int sig)
+{
+    printf("Received signal: %d\n", sig);
+    printf("So you want to stop me?\n");
+    printf("Well……\n");
+    printf("OK :)\n");
+    exit(0);
+}
+int main()
+{
+    signal(SIGINT , sigint_handler);
+    pause();
+    exit(0);
+}
+```
+
+信号处理函数在执行过程中，也有可能因为接收到其它信号而被其它信号处理函数打断。
+
+但是它不会被同类信号打断。举个例子：如果上面的信号处理函数是sleep 3秒，我在这三秒中再按一次ctrl+C，不会再跳进一次信号处理函数而重置sleep时间，而是默认已经接收这个信号，将信号状态设置为待处理。
+
+### 信号阻塞与解阻塞
+
+程序可以使用`sigprocmask`等函数，阻塞和解阻塞选定的信号。
+
+被阻塞的信号不会被接收。
+
+![image-20251116120152046](image-20251116120152046.png)
+
+sigprocmask行为如下：
+
++ 当`how = SIG_BLOCK`时，会将set中的信号添加到blocked中。
++ 当`how = SIG_UNBLOCK`时，会从blocked中删除set中的信号。
++ 当`how = SETMASK`时，会将blocked直接设置为set.
+
+如果oldset非空，那么该函数会将之前的blocked保存在oldset中。
+
+举个例子，下面的程序会阻塞SIGINT信号，保证在sleep的时候不被keyboard打扰~~（怎么听起来怪怪的~~
+
+```c++
+#include<signal.h>
+#include<sys/types.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<stdlib.h>
+int main()
+{
+    sigset_t mask , prev;
+    sigemptyset(&mask);
+    sigaddset(&mask , SIGINT);
+    sigprocmask(SIG_BLOCK , &mask , &prev);
+    sleep(10);
+    printf("first sleep OK!\n");
+    sigprocmask(SIG_SETMASK , &prev , NULL);
+    sleep(10);
+    return 0;
+}
+```
+
+请注意，如果在前10秒输入了Ctrl+C，在接触阻塞的一瞬间，程序就会结束。因为阻塞信号不等于将信号忽略，而只是屯着不处理。
 
 
 
