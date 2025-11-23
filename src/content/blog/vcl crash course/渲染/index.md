@@ -66,7 +66,7 @@ h是半程向量，是入射方向和注视方向的角平分线。$n\cdot h$衡
 
 如上图，有
 $$
-\frac{AP}{PB}=\frac{S_{\Delta AOP}}{S_{\Delta BOP}}=\frac{OAsin\ang AOP}{OBsin\ang BOP}=\frac{OA\cdot A'Q\cdot OB'}{OB\cdot B'Q\cdot OA'}
+\frac{AP}{PB}=\frac{S_{\Delta AOP}}{S_{\Delta BOP}}=\frac{OAsin\angle AOP}{OBsin\angle BOP}=\frac{OA\cdot A'Q\cdot OB'}{OB\cdot B'Q\cdot OA'}
 $$
 而
 $$
