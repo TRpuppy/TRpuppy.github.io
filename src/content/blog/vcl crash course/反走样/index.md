@@ -1,5 +1,5 @@
 ---
-title: 'VCL Course 06 Anti-aliasing' # (Required, max 60)
+title: 'VCL Course 07 Anti-aliasing' # (Required, max 60)
 description: '我其实挺不喜欢crash course系列的。写得急，且最后很难收尾。像现在ics考完了，前面ics的坑也就没有动力去填……' # (Required, 10 to 160)
 publishDate: '2025-11-20 00:15:00' # (Required, Date)
 tags:
@@ -87,3 +87,4 @@ MSAA为每个像素设置多个**采样点**。当一个**图元**(一般是三�
 事实上，远处的网格线在垂直空间上进行了过度的模糊。因为我们强制将x和y方向的纹理比例拉成一致的，就会导致这样的现象。例如x实际上缩小到原来的1/2，而y实际上缩小到原来的1/16，你取最大值，显然对y不太合适。于是我们需要可以将Mipmap修改成各向异性的。除了存储$2\times 2,4\times 4$这些各向同性的，我们还会存储$2\times 4,4\times 2$这些各项异性的数据。这样的效果就会好很多了。
 
 ![image-20251124114547286](image-20251124114547286.png)
+
