@@ -1,5 +1,5 @@
 ---
-title: 'CV crash course 01:Basics, Image Processing, Feature Detecting and Image Stitching' # (Required, max 60)
+title: 'CV crash course 01 基础,图像处理,特征检测,图像拼接' # (Required, max 60)
 description: '好吧，又是一个crash course系列。已经没有可以思考的心智了' # (Required, 10 to 160)
 publishDate: '2025-12-10 00:21:00' # (Required, Date)
 tags:
