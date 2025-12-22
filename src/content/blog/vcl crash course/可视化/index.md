@@ -1,7 +1,7 @@
 ---
 title: 'VCL Course 21-25 Visualization and Interaction' # (Required, max 60)
 description: '你已习惯，孤独是一种信仰。——赵雷《阿刁》' # (Required, 10 to 160)
-publishDate: '2025-12-16 00:16:00' # (Required, Date)
+publishDate: '2025-12-22 00:18:00' # (Required, Date)
 tags:
   - VCL Crash Course
 heroImage: { src: './841a26f028f3e2ed1ae71cf4cd011540.jpg', alt: '阳菜！', color: '#B4C6DA' }

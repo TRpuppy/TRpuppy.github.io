@@ -1,7 +1,7 @@
 ---
 title: 'VCL Course 20 Animation' # (Required, max 60)
 description: '情长，飘黄，静悄悄的时光。清晨，日暮，何处是我的归宿。——朴树《猎户星座》' # (Required, 10 to 160)
-publishDate: '2025-11-27 00:16:00' # (Required, Date)
+publishDate: '2025-12-22 00:14:00' # (Required, Date)
 tags:
   - VCL Crash Course
 heroImage: { src: './0f680ba05a3d6a4328ce086d223f1b1f.jpg', alt: '阳菜！', color: '#B4C6DA' }
