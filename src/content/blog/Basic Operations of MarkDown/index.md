@@ -14,8 +14,6 @@ comment: true # (set false will disable comment, even if you've enabled it in si
 
 我使用[**Typora**](https://typora.io/)来进行MarkDown的编辑。它是收费的，因为没搞定网络上的破解版，于是迫不得已支持正版​​qwq
 
-
-
 # MarkDown基本操作
 
 ## 一、标题
