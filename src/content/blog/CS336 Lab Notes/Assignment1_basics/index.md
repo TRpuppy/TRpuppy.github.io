@@ -77,7 +77,9 @@ Decoding很简单，从token_id复原回token，再从token连接起来的bytes�
 
 Encoding基本的idea就是对输入的字符串按顺序应用merge rules。同时有一个细节需要注意：为了保持与训练时一致，我们在encoding时也需要使用相同的方式进行Pre Tokenize，然后忽略所有跨Pre_token的合并。所以我们的实现中，最小单位的函数设计成：`apply_merges(token:bytes)->list[int]`，这个函数只接受PreTokenize后得到的一个小token，返回最终的encode结果。
 
-这个函数的具体实现：别傻傻地去遍历一遍所有merge rules(约32000个)了~~(没错说得就是我自己)~~，一个token大小约为5，你直接在token里面找byte pair，看看它们在不在merge rules里面。这样会快得多。此外，我还弄了个LRU的小缓存~~(绝对不会告诉你这是因为之前弄成遍历一遍merge rules，导致这个函数太慢了)~~，储存token和编码结果，如果缓存命中就可以直接返回，不用再处理一遍。
+这个函数的具体实现：别傻傻地去遍历一遍所有merge rules(约32000个)了~~(没错说得就是我自己)~~，一个token大小约为5，你直接在token里面找byte pair，看看它们在不在merge rules里面。这样会快得多。
+
+此外，我还弄了个LRU的小缓存~~(绝对不会告诉你这是因为之前弄成遍历一遍merge rules，导致这个函数太慢了)~~，储存token和编码结果，如果缓存命中就可以直接返回，不用再处理一遍。
 
 指引上要求写的encode()函数和encode_iter函数，直接写就好了。它们适合用来处理小段形式的文本，约10M左右。
 
