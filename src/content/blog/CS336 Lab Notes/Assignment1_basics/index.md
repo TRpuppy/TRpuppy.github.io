@@ -120,12 +120,12 @@ Encoding基本的idea就是对输入的字符串按顺序应用merge rules。同
 
 ### 注意力块的具体实现
 
-> We offer no explanation as to why these architectures seem to work; we attribute their success, as all else, to divine benevolence. 
+> We offer no explanation as to why these architectures seem to work; we attribute their success, as all else, to divine benevolence.  ——Shazeer
 #### RMS PreNorm without transition
 
 一个注意力块包括一个多头注意力层和一个双线性层。层之间通过残差连接，且使用Pre-Norm的方式。
 
-> A variety of work has found that moving layer normalization from the output of each sub-layer to the input of each sub-layerimproves Transformer training stability.  ——Shazeer
+> A variety of work has found that moving layer normalization from the output of each sub-layer to the input of each sub-layerimproves Transformer training stability.
 
 RMSNorm(Root mean square)正则化层的设计引入了权重参数$g_i$。公式如下：
 $$
