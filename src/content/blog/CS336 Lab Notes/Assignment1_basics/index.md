@@ -379,7 +379,7 @@ checkpoint函数在torch.utils.checkpoint中。它的意思是，对于某个函
 
 ### 训练配置与最终结果
 
-采用了两组模型配置，分别是指引中推荐的配置和提到的GPT2_Large的配置。CS336配置在OWT数据集上跑，GPT2_LARGE配置在Tiny上跑。前者在验证集上的平均Loss为左右，后者在验证集上的平均Loss为1.1左右。
+采用了两组模型配置，分别是指引中推荐的配置和提到的GPT2_Large的配置。CS336配置在OWT数据集上跑，GPT2_LARGE配置在Tiny上跑。前者在验证集上的平均Loss为3.91左右，后者在验证集上的平均Loss为1.10左右。
 ```python
 CS_336_CONFIG = {
     "vocab_size": 32000,
