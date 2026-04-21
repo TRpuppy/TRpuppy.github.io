@@ -1,6 +1,6 @@
 ---
 title: 'FNLP Crash Course' # (Required, max 60)
-description: '时空是个圆圈，直行或是转弯，我们最终都会相见' # (Required, 10 to 160)
+description: '时空是个圆圈，直行或是转弯，我们最终都会相见——赵雷《我记得》' # (Required, 10 to 160)
 publishDate: '2026-04-21 17:20:00' # (Required, Date)
 tags:
   - FNLP Crash Course
