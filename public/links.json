@@ -11,12 +11,6 @@
           "avatar": "/images/zeta.jpg"
         },
         {
-          "name": "陈乐颜的个人主页",
-          "intro": "噶啦嘛！",
-          "link": "https://nicheeeee.github.io",
-          "avatar": "/images/cly.jpg"
-        },
-        {
           "name": "李欣悦的个人主页",
           "intro": "健康作息的元气少女",
           "link": "https://starrystarryue.github.io",
@@ -27,6 +21,12 @@
           "intro": "执掌挎包的富人子弟",
           "link": "https://jiang-reizen.github.io/",
           "avatar": "/images/jrz.jpg"
+        },
+        {
+          "name": "诸葛伍的个人主页",
+          "intro": "可爱的喷火小龙龙！",
+          "link": "https://trailblazerwu.me",
+          "avatar": "/images/firefly.jpg"
         }
       ]
     },
